@@ -18,7 +18,7 @@ A predictive, parametric micro-insurance platform that covers delivery partners 
 
 Before a rider begins their evening shift, ShiftShield tells them:
 
-*"Rain likely in your pincode during dinner rush. Your estimated loss including daily bonus = ₹420. Cover this shift for ₹5."*
+_"Rain likely in your pincode during dinner rush. Your estimated loss including daily bonus = ₹420. Cover this shift for ₹5."_
 
 One tap. If the disruption hits, money is in their account before the rain stops. No forms. No claims. No waiting.
 
@@ -33,6 +33,7 @@ Most parametric insurance products operate at city level. Rain in one neighborho
 ShiftShield operates at **pincode-level granularity**. If Velachery floods but Adyar stays dry, only riders in Velachery get covered. This drastically reduces false payouts, lowers premiums, and builds rider trust because the system reflects what they actually experienced.
 
 **Implementation plan:**
+
 - Integrate a weather API (IMD / OpenWeatherMap) with pincode-level resolution
 - Define rainfall and flood thresholds per pincode based on historical disruption patterns
 - Build a real-time weather monitoring service that evaluates trigger conditions continuously during covered shift windows
@@ -44,6 +45,7 @@ Parametric insurance has a fraud problem if you only check weather, anyone can c
 ShiftShield validates that the rider was **actually logged in and accepting orders** at the time of the disruption event. If you were offline or had the app closed, no payout triggers. Coverage is tied to active shift participation, not just location.
 
 **Implementation plan:**
+
 - Track rider app login status and order acceptance state during the coverage window
 - Cross-reference disruption event timestamps with rider activity logs
 - Implement a validation layer that requires both conditions (disruption event + active session) before any payout is approved
@@ -55,6 +57,7 @@ Traditional insurance requires riders to manually prove their income loss. Forms
 ShiftShield uses the **platform's own performance data** as claim evidence. If Swiggy or Zomato's system shows that a rider's completion rate, rank, or delivery count dropped during a weather event that IS the proof. The platform already tracks this. We just read it.
 
 **Implementation plan:**
+
 - Build integrations to read rider performance metrics (rank, completion rate, delivery count) from platform APIs or exported data
 - Establish baseline performance profiles per rider to detect statistically significant drops
 - Automate the income-loss calculation by comparing actual shift performance against the rider's historical baseline for the same shift window
@@ -66,12 +69,13 @@ Bandh. Curfew. Local strikes. Section 144. These events shut down delivery opera
 ShiftShield treats social disruption as a **first-class trigger category** alongside weather. If a verified bandh or curfew is declared in a rider's operating zone, coverage activates using the same parametric logic automatic, instant, no paperwork.
 
 **Implementation plan:**
+
 - Build a social disruption detection pipeline using news APIs, government alert feeds, and social media signals
 - Define verification thresholds to confirm disruption events (multiple source corroboration before trigger activation)
 - Map disruption events to affected pincodes and activate coverage for riders with active shifts in those zones
 
 ## Team
 
-*Guidewire DEVTrails 2026 — ZeroBias*
+_Guidewire DEVTrails 2026 — ZeroBias_
 
 ---
