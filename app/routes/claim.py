@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.engine.decision import decide_on_claim
 from app.payout.payout import calculate_payout
+from app.engine.scoring import score_shift
 
 router = APIRouter()
 
