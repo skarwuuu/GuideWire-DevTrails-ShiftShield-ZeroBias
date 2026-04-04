@@ -1,5 +1,4 @@
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
+import { ConditionalShell } from "@/components/layout/ConditionalShell";
 import "@/styels.css";
 import type { Metadata } from "next";
 import { Geist_Mono, Outfit } from "next/font/google";
@@ -31,9 +30,7 @@ export default function RootLayout({
 			className={`${outfit.variable} ${geistMono.variable} font-sans h-full antialiased text-foreground bg-background`}>
 			<body className="overflow-x-hidden">
 				<a href="#main-content" className="skip-link">Skip to main content</a>
-				<Navbar />
-				<main id="main-content">{children}</main>
-				<Footer />
+				<ConditionalShell>{children}</ConditionalShell>
 			</body>
 		</html>
 	);

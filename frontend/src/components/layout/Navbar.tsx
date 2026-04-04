@@ -1,7 +1,7 @@
 "use client";
 
 import ScrollLink from "@/components/ScrollLink";
-import { IconLogin2, IconShieldDollar, IconUserPlus } from "@tabler/icons-react";
+import { IconLogin2, IconShieldDollar } from "@tabler/icons-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
@@ -78,16 +78,14 @@ export default function Navbar() {
 					</div>
 				</nav>
 
-				{/* Desktop auth — hidden on mobile */}
-				<div className="hidden md:flex items-center justify-center gap-2 bg-background text-foreground rounded-xl pl-4 p-1">
-					<button className="flex items-center gap-1 cursor-pointer active:scale-97 duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded">
-						<IconUserPlus size={18} aria-hidden="true" />
-						Sign Up
-					</button>
-					<button className="bg-foreground text-background rounded-[0.55rem] px-4 py-1.5 flex items-center gap-1 cursor-pointer active:scale-97 duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
-						<IconLogin2 size={18} aria-hidden="true" />
-						Log In
-					</button>
+				{/* Desktop CTA — hidden on mobile */}
+				<div className="hidden md:flex items-center">
+					<Link
+						href="/app"
+						className="bg-background text-foreground rounded-xl px-4 py-1.5 flex items-center gap-1.5 cursor-pointer active:scale-97 duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent text-sm font-medium">
+						<IconLogin2 size={16} aria-hidden="true" />
+						Open App
+					</Link>
 				</div>
 
 				{/* Hamburger — visible on mobile only */}
@@ -134,14 +132,13 @@ export default function Navbar() {
 					</ul>
 				</nav>
 				<div className="flex items-center gap-2 px-6 pb-4 pt-2 border-t border-background/10">
-					<button className="flex-1 flex items-center justify-center gap-1.5 py-2 cursor-pointer active:scale-97 duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-xl text-sm">
-						<IconUserPlus size={17} aria-hidden="true" />
-						Sign Up
-					</button>
-					<button className="flex-1 bg-background text-foreground rounded-xl py-2 flex items-center justify-center gap-1.5 cursor-pointer active:scale-97 duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent text-sm font-medium">
+					<Link
+						href="/app"
+						onClick={() => setMobileOpen(false)}
+						className="flex-1 bg-background text-foreground rounded-xl py-2 flex items-center justify-center gap-1.5 cursor-pointer active:scale-97 duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent text-sm font-medium">
 						<IconLogin2 size={17} aria-hidden="true" />
-						Log In
-					</button>
+						Open App
+					</Link>
 				</div>
 			</div>
 		</header>
