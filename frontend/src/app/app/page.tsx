@@ -14,9 +14,58 @@ import {
   IconUser,
   IconMapPin,
   IconBike,
+  IconCopy,
+  IconCheck,
 } from "@tabler/icons-react";
 
 type Tab = "login" | "register";
+
+function RiderIdModal({ riderId, onConfirm }: { riderId: string; onConfirm: () => void }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(riderId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-background/60 backdrop-blur-sm">
+      <div className="bg-foreground text-background rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl">
+        <p className="font-mono text-[9px] tracking-widest uppercase text-background/30 mb-6">Registration Complete</p>
+        <h2 className="font-sans font-black text-xl leading-tight mb-1">Save your Rider ID</h2>
+        <p className="text-background/45 text-sm mb-6 leading-relaxed">
+          This is your only login credential. There is no password recovery — if you lose this ID, your account cannot be accessed.
+        </p>
+
+        {/* ID display */}
+        <div className="bg-background/8 border border-background/15 rounded-xl px-4 py-4 flex items-center justify-between mb-3">
+          <span className="font-mono text-lg font-bold tracking-widest text-accent">{riderId}</span>
+          <button onClick={handleCopy}
+            className="flex items-center gap-1.5 font-mono text-[9px] tracking-widest uppercase px-3 py-1.5 rounded-lg border transition-all cursor-pointer
+              border-background/20 text-background/50 hover:border-accent/50 hover:text-accent">
+            {copied
+              ? <><IconCheck size={11} className="text-emerald-400" /><span className="text-emerald-400">Copied</span></>
+              : <><IconCopy size={11} /><span>Copy</span></>
+            }
+          </button>
+        </div>
+
+        <p className="font-mono text-[9px] text-background/25 tracking-wide mb-6">
+          Screenshot this screen or save it somewhere safe.
+        </p>
+
+        <button onClick={onConfirm} disabled={!copied}
+          className="primary-btn w-full justify-center py-3 disabled:opacity-30 transition-opacity">
+          I&apos;ve saved it — Enter App
+        </button>
+        {!copied && (
+          <p className="font-mono text-[9px] text-background/25 text-center mt-2 tracking-wide">Copy the ID first to continue</p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function OnboardingView({ onRiderId }: { onRiderId: (id: string) => void }) {
   const [tab, setTab] = useState<Tab>("login");
@@ -29,6 +78,7 @@ function OnboardingView({ onRiderId }: { onRiderId: (id: string) => void }) {
   });
   const [regError, setRegError] = useState("");
   const [regLoading, setRegLoading] = useState(false);
+  const [pendingRiderId, setPendingRiderId] = useState<string | null>(null);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -50,13 +100,17 @@ function OnboardingView({ onRiderId }: { onRiderId: (id: string) => void }) {
     setRegLoading(true);
     try {
       const res = await api.rider.register({ ...form, upi_id: form.upi_id || undefined });
-      onRiderId(res.rider_id);
+      setPendingRiderId(res.rider_id);
     } catch (err) {
       setRegError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setRegLoading(false);
     }
   }
+
+  if (pendingRiderId) return (
+    <RiderIdModal riderId={pendingRiderId} onConfirm={() => onRiderId(pendingRiderId)} />
+  );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[75vh]">
