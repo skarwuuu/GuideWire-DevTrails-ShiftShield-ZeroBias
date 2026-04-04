@@ -39,8 +39,8 @@ pip install -r requirements.txt
 uvicorn app.main:app --port 4000 --reload
 ```
 
-Backend runs at `http://localhost:4000`  
-Health check: `http://localhost:4000/health`  
+Backend runs at `http://localhost:4000`
+Health check: `http://localhost:4000/health`
 API docs: `http://localhost:4000/docs`
 
 ---
@@ -119,16 +119,16 @@ GuideWire-DevTrails/
 
 ## API Overview
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/rider/register` | Register a new rider |
-| GET | `/rider/:id` | Get rider profile |
-| POST | `/shift/start` | Start a shift (activates coverage) |
-| POST | `/shift/end` | End a shift |
-| GET | `/shift/:id/active` | Get active shift for a rider |
-| POST | `/claim/evaluate` | Run full ML scoring + payout pipeline |
-| GET | `/claim/:id/status` | Get claim status |
-| POST | `/premium/quote` | Get a premium quote |
+| Method | Endpoint            | Description                           |
+| ------ | ------------------- | ------------------------------------- |
+| POST   | `/rider/register`   | Register a new rider                  |
+| GET    | `/rider/:id`        | Get rider profile                     |
+| POST   | `/shift/start`      | Start a shift (activates coverage)    |
+| POST   | `/shift/end`        | End a shift                           |
+| GET    | `/shift/:id/active` | Get active shift for a rider          |
+| POST   | `/claim/evaluate`   | Run full ML scoring + payout pipeline |
+| GET    | `/claim/:id/status` | Get claim status                      |
+| POST   | `/premium/quote`    | Get a premium quote                   |
 
 ---
 

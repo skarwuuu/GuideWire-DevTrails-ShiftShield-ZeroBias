@@ -74,6 +74,105 @@ ShiftShield treats social disruption as a **first-class trigger category** along
 - Define verification thresholds to confirm disruption events (multiple source corroboration before trigger activation)
 - Map disruption events to affected pincodes and activate coverage for riders with active shifts in those zones
 
+---
+
+## Technical Architecture
+
+```
+Frontend (Next.js 15)          Backend (FastAPI)             Data Layer
+─────────────────────          ─────────────────             ──────────
+/app/page      ──── REST ────▶ POST /riders/register ──────▶ MongoDB Atlas
+/app/shift                     GET  /riders/{id}
+/app/claim     ◀─── JSON ───── POST /shifts/start
+/app/quote                     GET  /shifts/active/{rider_id}
+                               POST /claims/evaluate ────────▶ ML Pipeline
+                               POST /premium/quote            OpenWeather API
+```
+
+## Tech Stack
+
+| Layer    | Technology                                |
+| -------- | ----------------------------------------- |
+| Frontend | Next.js 15, TypeScript, Tailwind CSS v4   |
+| Backend  | FastAPI, Python 3.11, Uvicorn             |
+| Database | MongoDB (async via Motor)                 |
+| ML       | scikit-learn 1.6.1, XGBoost 2.0.3, joblib |
+| Weather  | OpenWeatherMap API (pincode-level)        |
+| Auth     | Rider ID + localStorage (stateless)       |
+| Deploy   | Render (backend), Vercel (frontend)       |
+
+## ML Scoring Pipeline
+
+Claims run through 5 sequential models before a decision is made:
+
+```
+Claim Input
+    │
+    ├─▶ M1: Weather Score        weather.joblib
+    │       Rainfall intensity at rider's pincode
+    │
+    ├─▶ M2: App Activity         scoring_model.joblib
+    │       Was the rider logged in and accepting orders?
+    │
+    ├─▶ M3: Rank Drop            m3_rank_model.joblib
+    │       Did platform rank/completion rate fall?
+    │
+    ├─▶ M4: Shift Impact         shift_model.joblib
+    │       How much did the disruption affect this shift?
+    │
+    └─▶ M5: Disruption Index     shiftshield_rf_calibrated.joblib
+            Ensemble confidence score across all signals
+
+        │
+        ▼
+    decision.py — APPROVED / PENDING / REJECTED
+    Payout calculated: base_amount × disruption_multiplier
+```
+
+Each model outputs a binary signal (triggered / not triggered). `scoring.py` aggregates them into a `confidence_score`. If ≥ 3 signals fire AND confidence > threshold, the claim is approved automatically.
+
+## API Reference
+
+| Method | Endpoint                    | Description                        |
+| ------ | --------------------------- | ---------------------------------- |
+| POST   | `/riders/register`          | Register new rider                 |
+| GET    | `/riders/{rider_id}`        | Fetch rider profile                |
+| POST   | `/shifts/start`             | Start a shift (activates coverage) |
+| POST   | `/shifts/end/{shift_id}`    | End active shift                   |
+| GET    | `/shifts/active/{rider_id}` | Get current active shift           |
+| POST   | `/claims/evaluate`          | Run ML pipeline on a shift         |
+| POST   | `/premium/quote`            | Get premium quote                  |
+
+## Local Development
+
+```bash
+# Backend
+cd backend
+py -3.11 -m venv venv
+venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 4000
+
+# Frontend (separate terminal)
+cd frontend
+pnpm install                 # or: npm install
+pnpm dev                     # runs on localhost:3000
+```
+
+Requires a `.env` in `backend/`:
+
+```
+MONGODB_URL=mongodb+srv://...
+OPENWEATHER_API_KEY=...
+```
+
+## Deployment
+
+- **Backend → Render**: `render.yaml` at repo root auto-configures the service. Add `MONGODB_URL` and `OPENWEATHER_API_KEY` as env vars in the Render dashboard.
+- **Frontend → Vercel**: Set root directory to `frontend`, add `NEXT_PUBLIC_API_URL=https://your-render-url.onrender.com`.
+
+---
+
 ## Team
 
 _Guidewire DEVTrails 2026 — ZeroBias_
