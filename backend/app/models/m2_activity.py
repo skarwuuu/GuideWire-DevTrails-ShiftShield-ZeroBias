@@ -1,3 +1,4 @@
+# M2 Activity Validator
 import hashlib
 import math
 import joblib
@@ -132,30 +133,17 @@ def run_activity_validator(
         ml_score = rule_score  # fallback
 
     # ----------------------------------
-    # 🔹 HYBRID DECISION (BEST PRACTICE)
+    # 🔹 HYBRID SCORE (FIXED)
     # ----------------------------------
     final_score = round(0.6 * ml_score + 0.4 * rule_score, 2)
+    triggered = final_score >= 50   # consistent with other models
 
-    if final_score >= 75:
-        decision = "AUTO_APPROVED"
-    elif final_score >= 45:
-        decision = "FLAGGED_FOR_REVIEW"
-    else:
-        decision = "AUTO_REJECTED"
-
-    triggered = decision == "AUTO_APPROVED"
-
-    # ----------------------------------
-    # 🔹 DETAILS (ENHANCED)
-    # ----------------------------------
     details = (
-        f"Rider {rider_id} | Rule={rule_score} | ML={round(ml_score,2)} | Final={final_score} | "
-        f"{orders_completed}/{orders_attempted} orders | idle={round(idle_ratio*100)}%"
+        f"Rider {rider_id} | Rule={rule_score} | ML={round(ml_score,2)} | "
+        f"Final={final_score} | {orders_completed}/{orders_attempted} orders | "
+        f"idle={round(idle_ratio*100)}%"
     )
 
-    # ----------------------------------
-    # 🔹 FINAL OUTPUT
-    # ----------------------------------
     return ActivitySignal(
         rider_id=rider_id,
         last_app_ping_minutes_ago=last_ping,

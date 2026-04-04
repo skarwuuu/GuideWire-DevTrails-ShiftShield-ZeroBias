@@ -21,7 +21,7 @@ def generate_training_data(n: int, seed: int):
     X = np.zeros((n, 5), dtype=np.float32)
     y = np.zeros(n, dtype=np.int32)
     for i in range(n):
-        scenario = rng.integers(0, 5)
+        scenario = rng.integers(0, 6)
         if scenario == 0:
             base = rng.uniform(65, 100)
             X[i] = np.clip([
@@ -58,7 +58,8 @@ def generate_training_data(n: int, seed: int):
             scores[active_idx] = rng.uniform(55, 90, n_active)
             X[i] = np.clip(scores, 0, 100)
             y[i] = 0
-        else:
+        elif scenario == 4:
+            # No disruption — all signals low
             base = rng.uniform(0, 35)
             X[i] = np.clip([
                 base + rng.normal(0, 8),
@@ -68,6 +69,17 @@ def generate_training_data(n: int, seed: int):
                 base + rng.normal(0, 8),
             ], 0, 100)
             y[i] = 0
+
+        else:
+            # Bandh on clear weather day — M1/M2 low, M3/M4/M5 high
+            X[i] = np.clip([
+                rng.uniform(0,  35),    # m1 LOW — clear weather
+                rng.uniform(20, 50),    # m2 MODERATE — some activity drop
+                rng.uniform(75, 100),   # m3 HIGH — rank dropped
+                rng.uniform(75, 100),   # m4 HIGH — shift disrupted
+                rng.uniform(75, 100),   # m5 HIGH — bandh confirmed
+            ], 0, 100)
+            y[i] = 1
     return X, y
 def save_history(record: dict):
     os.makedirs(HISTORY_DIR, exist_ok=True)

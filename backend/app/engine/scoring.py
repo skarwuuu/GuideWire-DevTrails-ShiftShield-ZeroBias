@@ -50,10 +50,19 @@ async def run_scoring_engine(
     m2 = await asyncio.to_thread(run_activity_validator, rider_id, m1.score, m5.score)
 
     # Step 3: rank drop should correlate with activity drop
-    m3 = await asyncio.to_thread(run_rank_monitor, rider_id, m1.score, m2.score)
+    effective_disruption = max(m1.score, m5.score)
+    m3 = await asyncio.to_thread(run_rank_monitor, rider_id, effective_disruption, m2.score)
 
     # Step 4: shift timing — independent
-    m4 = await asyncio.to_thread(run_shift_classifier, rider_id, shift_start)
+    combined_env = max(m1.score, m5.score)
+    weather_flag = 0 if combined_env < 50 else 1 if combined_env < 75 else 2
+    m4 = await asyncio.to_thread(
+    run_shift_classifier,
+    rider_id,
+    shift_start,
+    zone_type="metro_suburb",
+    weather_flag=weather_flag,
+)
 
     signals = SignalBundle(
         m1_weather=m1,

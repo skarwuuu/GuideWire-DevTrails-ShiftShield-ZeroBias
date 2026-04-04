@@ -1,10 +1,12 @@
+# M1 Weather Engine
 import os
 import requests
 from dotenv import load_dotenv
 from app.schemas import WeatherSignal, WeatherSeverity
 from app.config import settings
 load_dotenv()
-API_KEY = settings.openweather_api_key
+
+API_KEY = settings.openweather_api_key or os.getenv("OPENWEATHER_API_KEY", "")
 def get_lat_lon_from_pincode(pincode: str):
     url = f"http://api.openweathermap.org/geo/1.0/zip?zip={pincode},IN&appid={API_KEY}"
     response = requests.get(url, timeout=10)
